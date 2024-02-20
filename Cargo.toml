@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = "0.5.0"
+rocket = { version = "0.5.0", features = ["json"] }
 google-sheets4 = "*"
 serde = "^1.0"
 serde_json = "^1.0"
@@ -15,3 +15,4 @@ hyper = "1.1.0"
 hyper-rustls = "0.26.0"
 tokio = "1.36.0"
 yup-oauth2 = "8.3.2"
+anyhow = "1.0.80"

@@ -31,6 +31,7 @@ pub async fn login(input: Json<LoginData>) -> String {
     }
 
     acc.pass = "".to_string();
+    acc.history.reverse();
 
     return serde_json::to_string(&acc).unwrap();
 }

@@ -7,7 +7,7 @@ use crate::sheet_helper::get_sheets;
 
 #[derive(Serialize, Clone)]
 struct LeaderboardEntry {
-    points: i32,
+    points: f32,
     username: String
 }
 

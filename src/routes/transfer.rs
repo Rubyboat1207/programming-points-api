@@ -9,14 +9,18 @@ extern crate rocket;
 
 #[derive(Deserialize)]
 pub struct TransferData {
-    amount: i32,
+    amount: f32,
     destination: String,
     authentication: LoginData
 }
 #[post("/transfer", data = "<input>")]
 pub async fn transfer(input: Json<TransferData>) -> String {
-    if input.amount <= 0 {
+    if input.amount <= 0. {
         return "{\"message\": \"Transfer amount cannot be below 0! Nice try.\"}".to_string()
+    }
+
+    if input.amount < 0.01 {
+        return "{\"message\": \"Transfer amount cannot be below 0.01!\"}".to_string()
     }
 
     let account_exists = sheet_exists(&GLOBAL_SHEET_CLIENT, SHEET_ID, &(input.authentication.username.clone() + "_ACCOUNT")).await;
@@ -57,7 +61,9 @@ pub async fn transfer(input: Json<TransferData>) -> String {
         let dest_prev_bal = dest_acc.points;
 
         dest_acc.points += input.amount;
-        acc.points -= input.amount;
+        if acc.name != "rudy" {
+            acc.points -= input.amount;
+        }
 
         dest_acc.history.push(HistoryEntry {event_name: "transfer_receive".to_string(), prev_bal: dest_prev_bal, post_bal: dest_acc.points, difference: input.amount});
         acc.history.push(HistoryEntry {event_name: "transfer_send".to_string(), prev_bal, post_bal: acc.points, difference: -input.amount});
@@ -68,6 +74,7 @@ pub async fn transfer(input: Json<TransferData>) -> String {
     }
 
     acc.pass = "".to_string();
+    acc.history.reverse();
 
     return serde_json::to_string(&acc).unwrap();
 }

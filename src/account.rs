@@ -5,7 +5,7 @@ use crate::{sheet_helper::{read_range, write_range}, sheet_serialize::{Serialize
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Account {
     pub name: String,
-    pub points: i32,
+    pub points: f32,
     pub currency: String,
     pub pass: String,
     pub history: Vec<HistoryEntry>
@@ -60,7 +60,7 @@ impl SheetSerializable for Account {
 
         let mut result = Account {
             name: sheet_name[..(sheet_name.len() - 8)].to_string(),
-            points: sheet_value[0][0].parse::<i32>().unwrap().clone(),
+            points: sheet_value[0][0].parse::<f32>().unwrap().clone(),
             currency: sheet_value[1][0].to_string(),
             pass: sheet_value[2][0].to_string(),
             history: vec![]
@@ -96,9 +96,9 @@ impl SheetSerializable for Account {
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct HistoryEntry {
     pub event_name: String,
-    pub difference: i32,
-    pub prev_bal: i32,
-    pub post_bal: i32,
+    pub difference: f32,
+    pub prev_bal: f32,
+    pub post_bal: f32,
 }
 
 #[async_trait]
@@ -133,9 +133,9 @@ impl SheetSerializable for HistoryEntry {
 
         Ok(Box::new(HistoryEntry {
             event_name: value[0][0].clone(),
-            difference: value[0][1].parse::<i32>().unwrap(),
-            prev_bal: value[0][2].parse::<i32>().unwrap(),
-            post_bal: value[0][3].parse::<i32>().unwrap(),
+            difference: value[0][1].parse::<f32>().unwrap(),
+            prev_bal: value[0][2].parse::<f32>().unwrap(),
+            post_bal: value[0][3].parse::<f32>().unwrap(),
         }))
     }
 }

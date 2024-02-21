@@ -99,6 +99,7 @@ pub struct HistoryEntry {
     pub difference: f32,
     pub prev_bal: f32,
     pub post_bal: f32,
+    pub message: String
 }
 
 #[async_trait]
@@ -109,7 +110,7 @@ impl SheetSerializable for HistoryEntry {
 
 
 
-        let val = write_range(client, SHEET_ID, &(sheet_name + "!A" + idx.to_string().as_str() + ":D" + idx.to_string().as_str()), vec![
+        let val = write_range(client, SHEET_ID, &(sheet_name + "!A" + idx.to_string().as_str() + ":E" + idx.to_string().as_str()), vec![
             vec![self.event_name.clone(), self.difference.to_string(), self.prev_bal.to_string(), self.post_bal.to_string()]
         ]).await;
 
@@ -127,7 +128,7 @@ impl SheetSerializable for HistoryEntry {
 
 
 
-        let value = read_range(client, SHEET_ID, &(sheet_name + "!A" + idx.to_string().as_str() + ":D" + idx.to_string().as_str())).await.unwrap();
+        let value = read_range(client, SHEET_ID, &(sheet_name + "!A" + idx.to_string().as_str() + ":E" + idx.to_string().as_str())).await.unwrap();
         
         
 
@@ -136,6 +137,7 @@ impl SheetSerializable for HistoryEntry {
             difference: value[0][1].parse::<f32>().unwrap(),
             prev_bal: value[0][2].parse::<f32>().unwrap(),
             post_bal: value[0][3].parse::<f32>().unwrap(),
+            message: value[0][4].to_string()
         }))
     }
 }

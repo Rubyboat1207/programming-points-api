@@ -1,6 +1,8 @@
+use std::time::Duration;
 use rocket::http::ext::IntoCollection;
 use serde::Serialize;
 use serde_json::to_string;
+use tokio::time::sleep;
 use crate::{GLOBAL_SHEET_CLIENT, SHEET_ID};
 use crate::account::Account;
 use crate::sheet_helper::get_sheets;
@@ -27,6 +29,7 @@ pub async fn leaderboard() -> String {
     let mut accounts = vec![];
 
     for name in account_names.iter() {
+        sleep(Duration::from_millis(200)).await;
         accounts.push(Account::get_account(&GLOBAL_SHEET_CLIENT, &name[..(name.len() - 8)]).await.unwrap());
     }
 

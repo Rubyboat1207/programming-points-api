@@ -11,7 +11,8 @@ extern crate rocket;
 pub struct TransferData {
     amount: f32,
     destination: String,
-    authentication: LoginData
+    authentication: LoginData,
+    message: Option<String>,
 }
 #[post("/transfer", data = "<input>")]
 pub async fn transfer(input: Json<TransferData>) -> String {
@@ -52,6 +53,10 @@ pub async fn transfer(input: Json<TransferData>) -> String {
         return "{\"message\": \"The destination is not valid\"}".to_string();
     }
 
+    if input.destination.clone() == acc.name.clone() + "_ACCOUNT" {
+        return "{\"message\": \"You can't send money to yourself. I dont feel like dealing with that ok.\"}".to_string();
+    }
+
     if input.destination.ends_with("_ACCOUNT") {
         // this is an account currency transfer
 
@@ -65,8 +70,8 @@ pub async fn transfer(input: Json<TransferData>) -> String {
             acc.points -= input.amount;
         }
 
-        dest_acc.history.push(HistoryEntry {event_name: "transfer_receive".to_string(), prev_bal: dest_prev_bal, post_bal: dest_acc.points, difference: input.amount});
-        acc.history.push(HistoryEntry {event_name: "transfer_send".to_string(), prev_bal, post_bal: acc.points, difference: -input.amount});
+        dest_acc.history.push(HistoryEntry {event_name: "transfer_receive".to_string(), prev_bal: dest_prev_bal, post_bal: dest_acc.points, difference: input.amount, message: input.message.as_ref().unwrap_or(&"".to_string()).to_string()});
+        acc.history.push(HistoryEntry {event_name: "transfer_send".to_string(), prev_bal, post_bal: acc.points, difference: -input.amount, message: "".to_string()});
 
         // todo: error handling, and hopefully retry
         let _ = acc.write_to_gsheet(&GLOBAL_SHEET_CLIENT, SerializeArgs::new()).await;

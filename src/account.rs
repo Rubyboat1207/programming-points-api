@@ -59,7 +59,7 @@ impl SheetSerializable for Account {
         let sheet_value = read_range(client, SHEET_ID, (sheet_name.clone() + "!A:D").as_str()).await.unwrap();
 
         let mut result = Account {
-            name: sheet_name[..("_ACCOUNT".len())].to_string(),
+            name: sheet_name[..(sheet_name.len() - 8)].to_string(),
             points: sheet_value[0][0].parse::<i32>().unwrap().clone(),
             currency: sheet_value[1][0].to_string(),
             pass: sheet_value[2][0].to_string(),

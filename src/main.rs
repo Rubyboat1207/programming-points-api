@@ -2,6 +2,7 @@ mod account;
 mod sheet_helper;
 mod sheet_serialize;
 mod routes;
+mod cors;
 
 use account::Account;
 use once_cell::sync::OnceCell;
@@ -101,5 +102,5 @@ async fn test() -> String {
 async fn rocket() -> _ {
     let _ = GLOBAL_SHEET_CLIENT.set(Mutex::new(None));
     initialize_global_sheet_client().await;
-    rocket::build().mount("/", routes![test, crate::routes::login::login])
+    rocket::build().attach(cors::CORS).mount("/", routes![test, crate::routes::login::login, crate::routes::transfer::transfer, crate::routes::leaderboard::leaderboard])
 }
